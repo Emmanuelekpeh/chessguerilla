@@ -796,7 +796,7 @@ Success rate: ${report.successRate}
 
 // Export the ChessGuerilla class
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { ChessGuerilla };
+    module.exports.ChessGuerilla = ChessGuerilla;
 } else {
     // Make it available globally in browser environments
     window.ChessGuerilla = ChessGuerilla;
