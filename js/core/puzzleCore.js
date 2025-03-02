@@ -160,8 +160,165 @@ class PuzzleCore {
     /**
      * Get a hint for the current puzzle
      */
+    /**
+     * Get a hint for the current puzzle
+     */
     getHint() {
         if (!this.currentPuzzle) return null;
         
         // Get the expected move at the current position
-        const expectedM
+        const expectedMoveIndex = this.moveHistory.length;
+        if (expectedMoveIndex >= this.currentPuzzle.moves.length) {
+            return {
+                type: "info",
+                message: "You've completed all the moves for this puzzle!"
+            };
+        }
+        
+        const expectedMove = this.currentPuzzle.moves[expectedMoveIndex];
+        const fromSquare = expectedMove.substring(0, 2);
+        const toSquare = expectedMove.substring(2, 4);
+        
+        // Check what piece is being moved
+        const piece = this.chessEngine.get(fromSquare);
+        if (!piece) {
+            return {
+                type: "error",
+                message: "Hint error: Could not find piece at expected position"
+            };
+        }
+        
+        // Create hints of increasing specificity
+        const hints = [
+            {
+                type: "vague",
+                message: `Look for a move with your ${this.getPieceName(piece.type)}.`,
+                highlightSquares: []
+            },
+            {
+                type: "moderate",
+                message: `Consider moving a piece from the ${this.getSquareDescription(fromSquare)} area.`,
+                highlightSquares: [fromSquare]
+            },
+            {
+                type: "specific",
+                message: `Try moving your ${this.getPieceName(piece.type)} from ${fromSquare} to ${toSquare}.`,
+                highlightSquares: [fromSquare, toSquare]
+            }
+        ];
+        
+        // Determine which hint level to show
+        const hintLevel = Math.min(this.currentPuzzle.hintCount || 0, 2);
+        this.currentPuzzle.hintCount = (this.currentPuzzle.hintCount || 0) + 1;
+        
+        return hints[hintLevel];
+    }
+    
+    /**
+     * Get a descriptive name for a piece
+     */
+    getPieceName(pieceType) {
+        const pieceNames = {
+            'p': 'pawn',
+            'n': 'knight',
+            'b': 'bishop',
+            'r': 'rook',
+            'q': 'queen',
+            'k': 'king'
+        };
+        
+        return pieceNames[pieceType] || 'piece';
+    }
+    
+    /**
+     * Get a descriptive name for a square
+     */
+    getSquareDescription(square) {
+        const file = square.charAt(0);
+        const rank = square.charAt(1);
+        
+        let area = '';
+        
+        // Determine file area
+        if (file === 'a' || file === 'b' || file === 'c') {
+            area += 'queenside';
+        } else if (file === 'f' || file === 'g' || file === 'h') {
+            area += 'kingside';
+        } else {
+            area += 'center';
+        }
+        
+        // Determine rank area
+        if (rank === '1' || rank === '2') {
+            area += ' back rank';
+        } else if (rank === '7' || rank === '8') {
+            area += ' front rank';
+        } else if (rank === '4' || rank === '5') {
+            area += ' middle';
+        }
+        
+        return area;
+    }
+    
+    /**
+     * Get puzzle statistics
+     */
+    getPuzzleStats() {
+        const stats = {
+            total: this.puzzleHistory.length,
+            solved: 0,
+            failed: 0,
+            abandoned: 0
+        };
+        
+        this.puzzleHistory.forEach(puzzle => {
+            if (puzzle.result === 'solved') stats.solved++;
+            else if (puzzle.result === 'failed') stats.failed++;
+            else if (puzzle.result === 'abandoned') stats.abandoned++;
+        });
+        
+        return stats;
+    }
+    
+    /**
+     * Export puzzle history
+     */
+    exportPuzzleHistory() {
+        return JSON.stringify(this.puzzleHistory);
+    }
+    
+    /**
+     * Import puzzle history
+     */
+    importPuzzleHistory(historyJson) {
+        try {
+            const history = JSON.parse(historyJson);
+            if (Array.isArray(history)) {
+                this.puzzleHistory = history;
+                return true;
+            }
+            return false;
+        } catch (e) {
+            console.error("Error importing puzzle history:", e);
+            return false;
+        }
+    }
+    
+    /**
+     * Get explanation for the current puzzle
+     */
+    getPuzzleExplanation() {
+        if (!this.currentPuzzle) return null;
+        
+        return {
+            objective: this.currentPuzzle.objective || "Find the best move",
+            explanation: this.currentPuzzle.explanation || "No explanation available",
+            theme: this.currentPuzzle.theme || "General tactics"
+        };
+    }
+}
+
+// Export the PuzzleCore class
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { PuzzleCore };
+}
