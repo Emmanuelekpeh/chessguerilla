@@ -1,42 +1,36 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+// Import CSS if not already imported elsewhere
+import '../css/styles.css';
+import '../css/chessboard-1.0.0.min.css';
 
-module.exports = {
-  entry: './src/js/main.js',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'js/bundle.[contenthash].js',
-    clean: true
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        }
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      }
-    ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './src/index.html',
-      filename: 'index.html'
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        { from: 'src/img', to: 'img' },
-        { from: 'src/css', to: 'css' }
-      ]
-    })
-  ]
-};
+// Import the ChessGuerilla class
+import { ChessGuerilla } from './chessGuerilla';
+
+// Initialize the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  // Create ChessGuerilla instance with options
+  const chessGuerilla = new ChessGuerilla({
+    userId: localStorage.getItem('chessguerilla_user') || `guest-${Date.now().toString(36)}`,
+    includeTraps: true,
+    useLocalStorage: true,
+    difficulty: 'adaptive'
+  });
+
+  // Initialize the chess board
+  chessGuerilla.initializeBoard('board', {
+    pieceTheme: 'img/chesspieces/wikipedia/{piece}.png'
+  });
+
+  // Set up report button
+  const reportBtn = document.getElementById('reportBtn');
+  if (reportBtn) {
+    reportBtn.addEventListener('click', () => {
+      chessGuerilla.showPerformanceReport();
+    });
+  }
+
+  // Set username display
+  const usernameEl = document.getElementById('username');
+  if (usernameEl) {
+    usernameEl.textContent = chessGuerilla.options.userId.replace('guest-', '');
+  }
+});
