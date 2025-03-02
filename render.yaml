@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: chessguerilla
+    env: static
+    buildCommand: npm install
+    staticPublishPath: ./
+    autoDeploy: true
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://chessguerilla-api.onrender.com/api/:splat
+  
+  - type: web
+    name: chessguerilla-api
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
