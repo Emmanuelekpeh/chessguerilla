@@ -305,5 +305,8 @@ class SkillTracker {
 
 // Export the SkillTracker class
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { SkillTracker };
+    module.exports.SkillTracker = SkillTracker; // Change this line
+} else {
+    // For browser environments
+    window.SkillTracker = SkillTracker;
 }
