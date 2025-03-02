@@ -1,11 +1,11 @@
-// Import CSS if not already imported elsewhere
-import '../css/styles.css';
-import '../css/chessboard-1.0.0.min.css';
+// Import CSS - comment these out if causing issues
+// You can add them as <link> tags in index.html instead
+// import '../css/styles.css';
+// import '../css/chessboard-1.0.0.min.css';
 
 // Import the ChessGuerilla class
 import { ChessGuerilla } from './chessGuerilla';
 
-// Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   // Create ChessGuerilla instance with options
   const chessGuerilla = new ChessGuerilla({
