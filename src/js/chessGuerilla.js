@@ -7,6 +7,11 @@
  * with skill tracking, trap detection, and progressive learning paths.
  */
 
+import { PuzzleCore } from './core/puzzleCore';
+import { PuzzleTraps } from './puzzleTraps';
+import { PuzzleGenerator } from './education/puzzleGenerator';
+import { SkillTracker } from './education/skillTracker';
+
 // Import required modules (if in Node.js environment)
 // In browser, these would be included via script tags
 if (typeof module !== 'undefined' && module.exports) {
