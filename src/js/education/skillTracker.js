@@ -5,6 +5,8 @@
  * and provides an educational path for chess improvement
  */
 
+import { UserSkillProfile } from './userSkillProfile';
+
 class SkillTracker {
     constructor(userId) {
         this.userId = userId;
