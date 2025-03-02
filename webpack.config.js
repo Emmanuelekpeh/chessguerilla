@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './src/js/main.js',
+  entry: './src/js/main.js', // Using the src directory structure
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/bundle.[contenthash].js',
