@@ -3,17 +3,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const fs = require('fs');
 
-// Check if directories exist
-const imgDirExists = fs.existsSync(path.resolve(__dirname, 'src/img'));
-const cssDirExists = fs.existsSync(path.resolve(__dirname, 'src/css'));
-
-// Prepare copy patterns
+// Build copy patterns based on existing directories
 const copyPatterns = [];
-if (imgDirExists) {
-  copyPatterns.push({ from: 'src/img', to: 'img' });
-}
-if (cssDirExists) {
+
+// Check if directories exist before adding them to copy patterns
+if (fs.existsSync(path.resolve(__dirname, 'src/css'))) {
   copyPatterns.push({ from: 'src/css', to: 'css' });
+}
+
+if (fs.existsSync(path.resolve(__dirname, 'src/img'))) {
+  copyPatterns.push({ from: 'src/img', to: 'img' });
 }
 
 module.exports = {
@@ -44,8 +43,15 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/index.html',
-      filename: 'index.html'
+      filename: 'index.html',
+      inject: 'body'
     }),
     ...(copyPatterns.length > 0 ? [new CopyWebpackPlugin({ patterns: copyPatterns })] : [])
-  ]
+  ],
+  externals: {
+    // Mark these as external since they're loaded via CDN
+    'jquery': 'jQuery',
+    'chess.js': 'Chess',
+    '@chrisoakman/chessboardjs': 'Chessboard'
+  }
 };
