@@ -282,16 +282,46 @@ function clearMessage() {
 }
 
 // Additional functions for puzzle generation system
-function generateRandomPuzzle(difficulty) {
-    // This is a placeholder for a more sophisticated puzzle generation system
-    // In a real implementation, this would connect to an API or use a chess engine
-    
-    // For now, we'll just return a random puzzle from our existing set with matching difficulty
-    const matchingPuzzles = chessPuzzles.filter(puzzle => puzzle.difficulty.toLowerCase() === difficulty.toLowerCase());
-    if (matchingPuzzles.length === 0) {
-        return null;
+// Function to load puzzles from API
+async function fetchPuzzles(difficulty = 'medium', count = 5) {
+    showLoading(true);
+    try {
+        const response = await fetch('/api/puzzles', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ difficulty, count })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch puzzles');
+        }
+        
+        const data = await response.json();
+        
+        // Replace the static puzzles with the fetched ones
+        if (data.puzzles && data.puzzles.length > 0) {
+            // Merge with existing puzzles or replace them
+            chessPuzzles.push(...data.puzzles);
+            showMessage('New puzzles loaded!', 'info');
+        }
+    } catch (error) {
+        console.error('Error fetching puzzles:', error);
+        showMessage('Failed to load new puzzles. Using existing ones.', 'error');
+    } finally {
+        showLoading(false);
     }
+}
+
+// Add loading indicator functions
+function showLoading(isLoading) {
+    const messageBox = document.getElementById('messageBox');
     
-    const randomIndex = Math.floor(Math.random() * matchingPuzzles.length);
-    return matchingPuzzles[randomIndex];
+    if (isLoading) {
+        messageBox.innerHTML = '<div class="loading-spinner"></div> Loading puzzles...';
+        messageBox.className = 'message-box info';
+    } else {
+        clearMessage();
+    }
 }
