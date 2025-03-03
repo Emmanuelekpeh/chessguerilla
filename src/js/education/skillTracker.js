@@ -303,10 +303,9 @@ class SkillTracker {
     }
 }
 
-// Export the SkillTracker class
+export { SkillTracker };
+
+// For backwards compatibility with CommonJS
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports.SkillTracker = SkillTracker; // Change this line
-} else {
-    // For browser environments
-    window.SkillTracker = SkillTracker;
+    module.exports = { SkillTracker };
 }
