@@ -794,10 +794,10 @@ Success rate: ${report.successRate}
     }
 }
 
-// Export the ChessGuerilla class
+// Replace lines 797-803 with:
+export { ChessGuerilla };
+
+// For backwards compatibility with CommonJS
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports.ChessGuerilla = ChessGuerilla;
-} else {
-    // Make it available globally in browser environments
-    window.ChessGuerilla = ChessGuerilla;
+    module.exports = { ChessGuerilla };
 }
